@@ -48,6 +48,7 @@ export default defineConfig({
   base: "./",
   plugins: [inlineDashboardAssets()],
   build: {
+    outDir: "docs",
     rollupOptions: {
       input: ["index.html", "project-map.html"],
     },

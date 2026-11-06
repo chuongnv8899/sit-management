@@ -21,7 +21,7 @@ npm install
 npm run dev
 ```
 
-Create a production build with `npm run build`. The build inlines the dashboard's JavaScript and CSS into `dist/index.html`, so the dashboard is a single HTML file ready to upload to GitHub Pages. `dist/project-map.html` is included as a separate optional page. Configure GitHub Pages to deploy the `dist/` directory.
+Create a production build with `npm run build`. The build inlines the dashboard's JavaScript and CSS into `docs/index.html`, so the dashboard is a single HTML file ready to publish on GitHub Pages. `docs/project-map.html` is included as a separate optional page. In the repository's GitHub Pages settings, choose **Deploy from a branch**, select your branch, and set the folder to `/docs`.
 
 ## Starter account
 

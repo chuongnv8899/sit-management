@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f7fb" />
+    <meta
+      name="description"
+      content="A simple project management dashboard."
+    />
+    <title>Sit Management</title>
+    <script type="module">(function(){const e=document.createElement("link").relList;if(e&&e.supports&&e.supports("modulepreload"))return;for(const a of document.querySelectorAll('link[rel="modulepreload"]'))t(a);new MutationObserver(a=>{for(const n of a)if(n.type==="childList")for(const o of n.addedNodes)o.tagName==="LINK"&&o.rel==="modulepreload"&&t(o)}).observe(document,{childList:!0,subtree:!0});function s(a){const n={};return a.integrity&&(n.integrity=a.integrity),a.referrerPolicy&&(n.referrerPolicy=a.referrerPolicy),a.crossOrigin==="use-credentials"?n.credentials="include":a.crossOrigin==="anonymous"?n.credentials="omit":n.credentials="same-origin",n}function t(a){if(a.ep)return;a.ep=!0;const n=s(a);fetch(a.href,n)}})();class l{async hash(e,s,t){const a=new TextEncoder,n=await crypto.subtle.importKey("raw",a.encode(e),"PBKDF2",!1,["deriveBits"]),o=await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt:this.hexToBytes(s),iterations:t},n,256);return this.bytesToHex(new Uint8Array(o))}hexToBytes(e){const s=new Uint8Array(new ArrayBuffer(e.length/2));for(let t=0;t<s.length;t+=1)s[t]=Number.parseInt(e.slice(t*2,t*2+2),16);return s}bytesToHex(e){return Array.from(e,s=>s.toString(16).padStart(2,"0")).join("")}}class d{constructor(e=sessionStorage,s="sit-management-authenticated"){this.storage=e,this.storageKey=s}storage;storageKey;isAuthenticated(){return this.storage.getItem(this.storageKey)==="true"}start(){this.storage.setItem(this.storageKey,"true")}clear(){this.storage.removeItem(this.storageKey)}}class p{constructor(e,s,t){this.account=e,this.passwordHasher=s,this.sessionStore=t}account;passwordHasher;sessionStore;async signIn(e){return!(e.username.trim().toLowerCase()===this.account.user.username.toLowerCase())||await this.passwordHasher.hash(e.password,this.account.saltHex,this.account.iterations)!==this.account.passwordHashHex?null:(this.sessionStore.start(),this.account.user)}hasActiveSession(){return this.sessionStore.isAuthenticated()}signOut(){this.sessionStore.clear()}}class u{constructor(e,s){this.root=e,this.onSignOut=s}root;onSignOut;render(e){const s=new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"}).toUpperCase();this.root.innerHTML=`
+      <main class="dashboard-shell">
+        <aside class="sidebar">
+          <a class="brand brand-dark sidebar-brand" href="#" aria-label="Sit Management home">
+            <span class="brand-mark">S</span>
+            <span>Sit Management</span>
+          </a>
+          <span class="nav-caption">WORKSPACE</span>
+          <nav class="main-nav" aria-label="Main navigation">
+            <a class="nav-item nav-item-active" href="#overview" aria-current="page">
+              <span class="nav-icon" aria-hidden="true">▦</span> Overview
+            </a>
+            <a class="nav-item nav-item-muted" href="#projects" aria-disabled="true">
+              <span class="nav-icon" aria-hidden="true">▣</span> Projects
+              <span class="nav-badge">Soon</span>
+            </a>
+            <a class="nav-item nav-item-muted" href="#tasks" aria-disabled="true">
+              <span class="nav-icon" aria-hidden="true">☷</span> Tasks
+              <span class="nav-badge">Soon</span>
+            </a>
+          </nav>
+          <div class="sidebar-bottom">
+            <div class="user-card">
+              <span class="avatar">${this.escapeHtml(e.displayName.slice(0,1))}</span>
+              <span class="user-info"><strong>${this.escapeHtml(e.displayName)}</strong><small>${this.escapeHtml(e.role)}</small></span>
+              <button class="icon-button" id="sign-out" type="button" aria-label="Sign out" title="Sign out">↗</button>
+            </div>
+          </div>
+        </aside>
+
+        <section class="dashboard-main">
+          <header class="topbar">
+            <span class="breadcrumb">Workspace <span>/</span> Overview</span>
+            <span class="status-pill"><span></span> All changes saved</span>
+          </header>
+          <div class="page-content">
+            <div class="page-heading">
+              <div>
+                <span class="eyebrow">${s}</span>
+                <h1>Good to see you, ${this.escapeHtml(e.displayName)} <span class="wave" aria-hidden="true">✦</span></h1>
+                <p>Here’s what’s happening across your workspace.</p>
+              </div>
+              <button class="button button-primary" type="button" disabled title="Coming soon">
+                <span aria-hidden="true">＋</span> New project
+              </button>
+            </div>
+
+            <section class="stats-grid" aria-label="Workspace summary">
+              <article class="stat-card">
+                <div class="stat-top"><span>Active projects</span><span class="stat-icon violet">▣</span></div>
+                <strong>0</strong><small>No projects yet</small>
+              </article>
+              <article class="stat-card">
+                <div class="stat-top"><span>Open tasks</span><span class="stat-icon blue">☷</span></div>
+                <strong>0</strong><small>Nothing on your plate</small>
+              </article>
+              <article class="stat-card">
+                <div class="stat-top"><span>Completed</span><span class="stat-icon green">✓</span></div>
+                <strong>0</strong><small>Great things start here</small>
+              </article>
+            </section>
+
+            <section class="projects-panel">
+              <div class="panel-heading">
+                <div><h2>Projects</h2><p>Your team’s work at a glance.</p></div>
+                <button class="text-button" type="button" disabled>View all <span aria-hidden="true">→</span></button>
+              </div>
+              <div class="empty-state">
+                <div class="empty-illustration" aria-hidden="true">
+                  <span class="empty-paper">▤</span><span class="empty-spark">✦</span>
+                </div>
+                <h3>Your next big thing starts here</h3>
+                <p>Create a project to bring your goals, tasks, and team together.</p>
+                <button class="button button-secondary" type="button" disabled title="Coming soon">
+                  <span aria-hidden="true">＋</span> Create your first project
+                </button>
+              </div>
+            </section>
+            <p class="dashboard-footer">Your workspace is ready when you are.</p>
+          </div>
+        </section>
+      </main>
+    `,this.root.querySelector("#sign-out")?.addEventListener("click",this.onSignOut)}escapeHtml(e){return e.replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[s]??s)}}class h{constructor(e,s){this.root=e,this.onSubmit=s}root;onSubmit;render(){this.root.innerHTML=`
+      <main class="login-layout">
+        <section class="login-aside" aria-label="Product introduction">
+          <a class="brand brand-light" href="#" aria-label="Sit Management home">
+            <span class="brand-mark">S</span>
+            <span>Sit Management</span>
+          </a>
+          <div class="aside-copy">
+            <span class="eyebrow">YOUR WORK, IN ONE PLACE</span>
+            <h1>Make good work<br />move forward.</h1>
+            <p>Bring your projects, people, and plans together.</p>
+          </div>
+          <span class="aside-footnote">Project clarity starts here.</span>
+        </section>
+
+        <section class="login-panel">
+          <div class="login-card">
+            <a class="brand brand-dark" href="#" aria-label="Sit Management home">
+              <span class="brand-mark">S</span>
+              <span>Sit Management</span>
+            </a>
+            <h2>Sign in to your workspace</h2>
+            <p class="form-intro">Enter your account details to continue.</p>
+
+            <form id="login-form">
+              <label for="username">Username</label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                autocomplete="username"
+                placeholder="Enter your username"
+                required
+              />
+              <label for="password">Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Enter your password"
+                required
+              />
+              <p class="form-error" id="login-error" role="alert"></p>
+              <button class="button button-primary login-button" type="submit">
+                <span>Sign in</span>
+                <span aria-hidden="true">→</span>
+              </button>
+            </form>
+            <p class="login-note">Sign in with your workspace account.</p>
+          </div>
+          <span class="copyright">© ${new Date().getFullYear()} Sit Management</span>
+        </section>
+      </main>
+    `,this.root.querySelector("#login-form")?.addEventListener("submit",e=>{this.handleSubmit(e)})}showError(e){const s=this.root.querySelector("#login-error");s&&(s.textContent=e)}async handleSubmit(e){e.preventDefault();const s=e.currentTarget;if(!(s instanceof HTMLFormElement))return;const t=s.querySelector('button[type="submit"]');if(!t)throw new Error("The sign-in button was not found.");const a=new FormData(s),n={username:String(a.get("username")??""),password:String(a.get("password")??"")};this.showError(""),this.setLoading(t,!0);try{await this.onSubmit(n)}finally{t.isConnected&&this.setLoading(t,!1)}}setLoading(e,s){e.disabled=s;const t=e.querySelector("span");t&&(t.textContent=s?"Signing in…":"Sign in")}}class m{constructor(e,s,t){this.authenticationService=e,this.currentUser=t,this.loginView=new h(s,a=>this.handleSignIn(a)),this.dashboardView=new u(s,()=>this.handleSignOut())}authenticationService;currentUser;loginView;dashboardView;start(){if(this.authenticationService.hasActiveSession()){this.showDashboard(this.currentUser);return}this.showLogin()}showLogin(){this.loginView.render()}async handleSignIn(e){try{const s=await this.authenticationService.signIn(e);if(!s){this.loginView.showError("Incorrect username or password.");return}this.showDashboard(s)}catch(s){console.error("Could not verify the sign-in credentials.",s),this.loginView.showError("Sign in is unavailable. Please try again.")}}showDashboard(e){this.dashboardView.render(e)}handleSignOut(){this.authenticationService.signOut(),this.showLogin()}}const i={username:"Admin",displayName:"Admin",role:"Administrator"},g={user:i,saltHex:"d3f48a8bcebfd0afd5a223abc14d76dc",passwordHashHex:"a63e7191267ee43276e4721adaa559350de82f74320b0e125def6a061bcac294",iterations:31e4},c=document.querySelector("#app");if(!c)throw new Error("App root element was not found.");const b=new p(g,new l,new d),w=new m(b,c,i);w.start();
+</script>
+    <style>@import"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap";:root{font-family:DM Sans,sans-serif;color:#20243a;background:#f7f8fc;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-optical-sizing:auto;font-weight:400;--ink: #20243a;--muted: #8d91a4;--purple: #6758d9;--purple-dark: #5545c8;--line: #eceef4}*{box-sizing:border-box}body{min-width:320px;min-height:100vh;margin:0}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed}a{color:inherit;text-decoration:none}.login-layout{display:grid;min-height:100vh;grid-template-columns:minmax(390px,.92fr) 1.08fr;background:#fff}.login-aside{position:relative;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;min-height:100vh;padding:48px clamp(36px,6vw,88px);color:#fff;background:radial-gradient(ellipse at 7% 94%,rgb(167 154 255 / 27%) 0,transparent 37%),radial-gradient(ellipse at 100% 1%,rgb(138 117 255 / 27%) 0,transparent 34%),linear-gradient(145deg,#4237a7,#594ac9,#7064dc)}.login-aside:after{position:absolute;right:-155px;bottom:12%;width:390px;height:390px;border:1px solid rgb(255 255 255 / 12%);border-radius:50%;content:"";box-shadow:0 0 0 36px #ffffff08,0 0 0 72px #ffffff08}.brand{display:inline-flex;align-items:center;gap:11px;width:fit-content;font-family:Manrope,sans-serif;font-size:15px;font-weight:800;letter-spacing:-.5px}.brand-mark{display:grid;width:34px;height:34px;place-items:center;border-radius:11px;color:#fff;background:#786be6;font-family:Manrope,sans-serif;font-size:19px;font-weight:800}.brand-light .brand-mark{color:#584bc2;background:#fff}.aside-copy{position:relative;z-index:1;margin-top:-22px}.eyebrow{color:#9990f3;font-size:10px;font-weight:700;letter-spacing:1.65px}.login-aside .eyebrow{color:#c9c4ff}.aside-copy h1{margin:19px 0 15px;font-family:Manrope,sans-serif;font-size:clamp(36px,4vw,53px);font-weight:700;letter-spacing:-2.6px;line-height:1.16}.aside-copy p{margin:0;color:#d7d4f4;font-size:14px}.aside-footnote{color:#d7d4f4;font-size:12px}.login-panel{display:flex;align-items:center;justify-content:center;position:relative;padding:56px 32px 80px}.login-card{width:min(100%,390px)}.brand-dark{color:#33364c}.login-card>.brand{display:none}.login-eyebrow{display:block;margin-top:40px}.login-card h2{margin:12px 0 7px;font-family:Manrope,sans-serif;font-size:27px;font-weight:700;letter-spacing:-1.1px}.form-intro{margin:0 0 31px;color:#9094a5;font-size:13px}#login-form{display:flex;flex-direction:column}#login-form label{margin:0 0 8px;color:#44485c;font-size:12px;font-weight:600}#login-form input{height:47px;margin-bottom:21px;padding:0 14px;border:1px solid #e6e8ef;border-radius:8px;outline:none;color:#262a3e;background:#fff;font-size:13px;transition:border-color .15s ease,box-shadow .15s ease}#login-form input::placeholder{color:#b4b7c3}#login-form input:focus{border-color:#8e84e9;box-shadow:0 0 0 3px #6758d91c}.form-error{min-height:17px;margin:-10px 0 10px;color:#c84158;font-size:12px}.button{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:43px;padding:0 17px;border:0;border-radius:8px;font-size:12px;font-weight:600;transition:background .15s ease,transform .15s ease}.button:not(:disabled):active{transform:translateY(1px)}.button-primary{color:#fff;background:var(--purple)}.button-primary:not(:disabled):hover{background:var(--purple-dark)}.button-primary:disabled{opacity:.65}.login-button{width:100%;height:46px;justify-content:space-between;padding:0 16px}.login-button span:first-child{flex:1}.login-note{margin:20px 0 0;color:#a0a3b1;font-size:11px;text-align:center}.copyright{position:absolute;bottom:27px;color:#a5a8b4;font-size:11px}.dashboard-shell{display:grid;min-height:100vh;grid-template-columns:248px minmax(0,1fr)}.sidebar{display:flex;flex-direction:column;min-height:100vh;padding:29px 18px 17px;border-right:1px solid #eceef4;background:#fff}.sidebar-brand{margin:0 0 47px 6px}.nav-caption{margin:0 0 11px 9px;color:#a7a9b5;font-size:9px;font-weight:700;letter-spacing:1.3px}.main-nav{display:grid;gap:5px}.nav-item{display:flex;align-items:center;gap:12px;min-height:41px;padding:0 10px;border-radius:7px;font-size:12px;font-weight:500}.nav-item-active{color:#5d4fc9;background:#f1efff}.nav-item-muted{color:#878b9d}.nav-icon{width:17px;font-size:16px;text-align:center}.nav-badge{margin-left:auto;padding:3px 6px;border-radius:4px;color:#989baa;background:#f2f3f6;font-size:9px}.sidebar-bottom{margin-top:auto}.user-card{display:flex;align-items:center;gap:10px;padding:13px 3px 2px;border-top:1px solid #eff0f4}.avatar{display:grid;width:34px;height:34px;place-items:center;border-radius:50%;color:#5d4fc9;background:#ece9ff;font-size:13px;font-weight:700}.user-info{display:grid;gap:3px;min-width:0;flex:1}.user-info strong{font-size:11px;font-weight:600}.user-info small{color:#9699a8;font-size:10px}.icon-button{display:grid;width:30px;height:30px;place-items:center;border:0;border-radius:6px;color:#888c9f;background:transparent;font-size:16px}.icon-button:hover{color:#5545c8;background:#f3f2fb}.dashboard-main{min-width:0}.topbar{display:flex;align-items:center;justify-content:space-between;height:69px;padding:0 clamp(24px,4vw,58px);border-bottom:1px solid #eceef4;background:#fff}.breadcrumb{color:#777b8d;font-size:11px}.breadcrumb span{margin:0 8px;color:#c5c7d0}.status-pill{display:inline-flex;align-items:center;gap:7px;color:#878b9b;font-size:10px}.status-pill>span{width:6px;height:6px;border-radius:50%;background:#62c696}.page-content{width:min(100%,1110px);margin:0 auto;padding:43px clamp(24px,4vw,58px) 25px}.page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:29px}.page-heading .eyebrow{color:#a0a2b1;font-size:9px;letter-spacing:1.2px}.page-heading h1{margin:9px 0 5px;font-family:Manrope,sans-serif;font-size:clamp(23px,2.6vw,30px);font-weight:700;letter-spacing:-1.25px}.wave{color:#f2b958;font-size:19px}.page-heading p,.panel-heading p{margin:0;color:#9699a9;font-size:12px}.page-heading>.button{min-height:39px;margin-bottom:2px;font-size:11px}.stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-bottom:21px}.stat-card{min-height:134px;padding:18px 19px 15px;border:1px solid #eceef4;border-radius:10px;background:#fff;box-shadow:0 3px 11px #1a214105}.stat-top{display:flex;align-items:center;justify-content:space-between;color:#85899a;font-size:11px}.stat-icon{display:grid;width:29px;height:29px;place-items:center;border-radius:8px;font-size:13px}.stat-icon.violet{color:#7868dd;background:#f0edff}.stat-icon.blue{color:#4b9ed6;background:#eaf6ff}.stat-icon.green{color:#3aa77d;background:#e8f8f1}.stat-card>strong{display:block;margin-top:10px;font-family:Manrope,sans-serif;font-size:25px;font-weight:700;letter-spacing:-1px;line-height:1.1}.stat-card>small{display:block;margin-top:5px;color:#a0a3b1;font-size:10px}.projects-panel{min-height:355px;border:1px solid #eceef4;border-radius:10px;background:#fff;box-shadow:0 3px 11px #1a214105}.panel-heading{display:flex;align-items:center;justify-content:space-between;min-height:72px;padding:13px 19px;border-bottom:1px solid #f0f1f5}.panel-heading h2{margin:0 0 4px;font-family:Manrope,sans-serif;font-size:14px;font-weight:700}.panel-heading p{font-size:10px}.text-button{border:0;color:#6758d9;background:transparent;font-size:10px;font-weight:600}.text-button span{margin-left:4px}.empty-state{display:flex;min-height:279px;flex-direction:column;align-items:center;justify-content:center;padding:23px;text-align:center}.empty-illustration{position:relative;display:grid;width:63px;height:63px;place-items:center;margin-bottom:11px;border-radius:19px;color:#7669d9;background:#f2f0ff}.empty-paper{font-size:29px}.empty-spark{position:absolute;top:7px;right:7px;color:#e4a948;font-size:14px}.empty-state h3{margin:5px 0;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;letter-spacing:-.2px}.empty-state p{margin:0 0 17px;color:#999cab;font-size:11px}.button-secondary{min-height:36px;border:1px solid #e7e4f9;color:#5d4fc9;background:#fff;font-size:10px}.button-secondary:disabled{opacity:.7}.dashboard-footer{margin:17px 0 0;color:#adb0bc;font-size:10px;text-align:center}@media(max-width:850px){.login-layout{grid-template-columns:minmax(290px,.85fr) 1.15fr}.login-aside{padding:34px 30px}.dashboard-shell{grid-template-columns:205px minmax(0,1fr)}.page-content{padding-top:34px}}@media(max-width:640px){.login-layout{display:block}.login-aside{display:none}.login-panel{min-height:100vh;padding:32px 24px 72px}.login-card>.brand{display:inline-flex;margin-bottom:29px}.login-eyebrow{margin-top:0}.dashboard-shell{display:block}.sidebar{min-height:initial;padding:13px 18px;border-right:0;border-bottom:1px solid #eceef4}.sidebar-brand{margin:0}.nav-caption,.main-nav,.sidebar-bottom{display:none}.topbar{height:53px;padding:0 19px}.page-content{padding:29px 18px 22px}.page-heading{align-items:flex-start}.page-heading>.button{min-width:39px;width:39px;overflow:hidden;gap:0;padding:0;font-size:0}.page-heading>.button span{font-size:16px}.stats-grid{gap:9px}.stat-card{min-height:118px;padding:13px 11px}.stat-top{align-items:flex-start;gap:4px;font-size:9px}.stat-icon{width:23px;height:23px;flex-shrink:0;font-size:11px}.stat-card>strong{margin-top:11px;font-size:23px}.stat-card>small{font-size:9px}.projects-panel{min-height:330px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition-duration:.01ms!important}}
+</style>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
